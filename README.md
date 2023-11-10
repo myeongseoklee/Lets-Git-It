@@ -1,36 +1,120 @@
-# <p align="center"><b>let's GIT it</b></p>
+# **Let's Git it**
 
-<p align="center"> 📆 2023.01.11~ 2023.03.02
+![시연영상](./images/playgif.gif)
+
+## **📌 let's Git it 소개**
+
+📆 2023.01.11 ~ 2023.03.02 <br>
+
+let's Git it은 **깃허브 기반 개발자 랭킹 서비스**입니다. 랭킹 산출에 필요한 데이터는 Github 유저들의 사용 데이터(pr, commit, fork, star 등) 14가지를 기반으로 점수를 산출하여 랭킹을 제공하고 있습니다.
+
+주요 기능으로는 **상위 100명의 랭커 목록**, **랭킹, 티어 검색 및 개발역량 지표 분석**, **타인과 역량 지표 비교 분석**, **마이페이지**, **커뮤니티 게시판**이 있습니다.
+
+**(이 글을 보신 분이라면 링크 눌러서 랭킹을 한 번 확인해보세요~!)**
+
+✅ let's GIT it 서비스 바로가기 : https://let-s-git-it.vercel.app
+
+✅ let's GIT it 팀 레포지토리 : https://github.com/applleeee/Lets-Git-It
 
 <br>
+
+---
+
+## **💻 Stack**
+
+✅ 주요 스택 : TypeScript(NestJS), TypeORM, MySQL
+
+✅ 배포 : AWS EC2, RDS, VPC, S3, Route 53, CloudFront, Certificate Manager, System Manager
+
+✅ CI/CD : Docker, GitHub Actions, Jest
+
+✅ 문서화 : swagger
+
+✅ 일정 관리 : [notion](https://www.notion.so/wecode/Let-s-Git-It-98690cabce8e402484a4968ee14d2730?pvs=4), trello
+
+![trello](https://user-images.githubusercontent.com/109528794/282099845-7aeb1e53-0947-4ba3-903c-b145ebdc7726.png)
+
 <br>
-<!-- ## 📼 LET'S GIT IT -->
-<h2> let's GIT it 바로가기 : <a href="https://let-s-git-it.vercel.app/">https://let-s-git-it.vercel.app/</a></h2>
 
-<img src ="https://user-images.githubusercontent.com/100506719/223014450-d4b6f831-b312-482b-8797-8c80d6e649b8.gif" width="600" align="center">
+## **📌 담당 역할 소개 및 상세**
 
-<br />
+### **1. Auth API 개발**
 
-## 📌 소개
+✅ Github oauth 2.0 기반 회원가입 API, JWT를 이용한 인증 API 개발
 
-- 개발 동기부여를 위한 깃허브 랭킹 서비스
-- let's git it을 통해 자신의 깃허브 점수를 확인하고 친구, 유명인들과 비교해 보세요!
-- 개발 관련 커뮤니티(개발 질문, 프로젝트 모집, 채용 정보 등 자유롭게 공유해주세요)
+> 🛠️ [인증/인가 과정에서 XSS, CSRF 보안 개선 사례](https://growth-msleeffice.tistory.com/146)
 
-## 📌 Team let's GIT it
+✅ passport 라이브러리를 활용하여 유저 인증 정보 검증 -> 유저 정보 조회 로직을 AuthGuard로 분리하여 재사용성 향상
 
-`FE` 김보윤, 박지영, 심동섭, 홍석현 <br>
-`BE` 오현상, 이명석, 지송현
+- 유저 검증 후, user의 id, name 등의 기본 정보와 유저가 생성한 게시글, 댓글 및 각 게시물과 댓글에 생성한 like(좋아요) 정보를 request.user 객체 내부에 주입하여 자신이 생성한 게시글과 like 상태에 대한 수정, 삭제 권한 부여
 
-<br />
+✅ 짧은 엑세스 토큰(JWT)의 만료 기한으로, 재로그인의 불편함 해소를 위해 refreshToken 도입 및 로그아웃 API 개발
 
-## 📌 담당기능
+- http only, secure cookie를 활용
 
-- `오현상` - Top 5, Top 100, 깃허브 유저의 랭킹 등록 및 검색 그리고 비교
-- `이명석` - 깃허브 OAuth 인증/인가, 커뮤니티 게시판(댓글/대댓글 CRUD) 
-- `지송현` - 커뮤니티 게시판(글 CRUD, 글 목록 정렬, 검색)
+<br>
 
-<br />
+### **2. Comment API 개발**
+
+✅ 게시판 댓글/대댓글 CRUD API 개발
+
+- 대댓글 엔티티를 별도로 두지 않고, Comment Entity를 계층 구조로 설계하여 댓글과 대댓글을 하나의 테이블에서 관리
+
+  - 동일한 성격의 테이블이 여러개 있는 것이 비효율적이라고 생각하여 하나의 테이블에서 관리하기로 결정
+
+  - groupOrder : 하나의 게시글에 담긴 댓글과 대댓글의 그룹 순서
+
+  - depth : 댓글인지 대댓글인지 인식하는 컬럼으로 1이 댓글, 2가 대댓글
+
+✅ 게시판 댓글 like 생성, 삭제 API 개발
+
+- 유저가 하나의 댓글에 like(좋아요)를 눌렀을 때, 이미 like 상태라면 like 상태를 삭제하고 like 상태가 아니었다면 like를 생성
+
+<br>
+
+### **3. User API 개발**
+
+✅ 유저 마이페이지 조회/수정 API 개발
+
+<br>
+
+### **4. Database schema 설계**
+
+![](./images/ERD.png)
+
+<br>
+
+### **5. DevOps**
+
+✅ **브라우저와 서버 통신 간 보안 향상을 위해 API 서버에 HTTPS 적용**
+
+✅ **AWS infrastructure 구축**
+
+![](https://user-images.githubusercontent.com/109528794/282088002-39b470e3-8b30-4d2a-86e2-6983193f9f06.png)
+
+✅ **CI/CD 파이프라인 구축**
+
+![](https://user-images.githubusercontent.com/109528794/282088054-314596d5-cb3a-4643-be05-78760484b7dd.png)
+
+<br>
+
+### **6. 기타**
+
+✅ 컨트롤러, 서비스, 레포지토리 레이어의 Unit test 작성
+
+- 기능의 의도와 맞게 작동하는지 테스트하기 위함
+
+- 안정적인 CI를 보장하기 위함
+
+✅ [효율적인 API 문서 관리를 위한 Swagger 도입](https://growth-msleeffice.tistory.com/108)
+
+![](./images/swagger.png)
+
+✅ httpExceptionFilter 작성
+
+<br>
+
+---
 
 ## **프로젝트를 진행하며 성장한 점(요약)**
 
@@ -97,88 +181,6 @@ api를 개발하는 경험에 비해 DevOps 경험이 비교적 적었기 때문
 <br>
 
 ### ✅ **Nest.js, Typescript Skill이 향상되었다.**
-
-<br>
-
----
-
-## **📌 담당 역할 소개 및 상세**
-
-### **1. Auth API 개발**
-
-✅ Github oauth 2.0 기반 인증 API, JWT를 이용한 인가 API 개발
-
-> 🛠️ [인증/인가 과정에서 XSS, CSRF 보안 개선 사례](https://growth-msleeffice.tistory.com/146)
->
-> 🔜 Cross-Site 간 cookie를 주고 받기 위한 CloudFront 설정 방법(포스팅 예정)
-
-✅ 유저의 활동 정보(post, comment 관련)를 담은 user 객체 반환하는 권한 부여 로직 개발(guard, strategy)
-
-✅ accessToken 재발급, 로그아웃 API 개발
-
-<br>
-
-### **2. Comment API 개발**
-
-✅ 대댓글 엔티티를 따로 만들지 않고, Comment Entity에 내부적으로 대댓글 기능을 구현하여 게시판 댓글/대댓글 CRUD API 개발
-
-✅ 게시판 댓글/대댓글 좋아요 생성/삭제 API 개발
-
-<br>
-
-### **3. User API 개발**
-
-✅ 마이페이지 조회/수정 API 개발
-
-<br>
-
-### **4. Database schema 설계**
-
-![](./images/ERD.png)
-
-<br>
-
-### **5. DevOps**
-
-✅ **브라우저와 서버 통신 간 보안 향상을 위해 API 서버에 HTTPS 적용**
-
-> 🔜 Certificate Manager와 Route 53을 활용한 https 설정 (포스팅 예정)
-
-✅ AWS infrastructure 구축
-
-> 🔜 (회고 포스팅 예정)
-
-![](./images/infrastructure.png)
-
-✅ CI/CD 파이프라인 구축
-
-> 🔜 (회고 포스팅 예정)
-
-![](./images/cicd.png)
-
-<br>
-
-### **6. 기타**
-
-✅ 컨트롤러, 서비스, 레포지토리 레이어의 Unit test 작성
-
-✅ [효율적인 API 문서 관리를 위한 Swagger 도입](https://growth-msleeffice.tistory.com/108)
-
-![](./images/swagger.png)
-
-✅ httpExceptionFilter 작성
-
-<br>
-
----
-
-## **💻 Stack**
-
-✅ TypeScript([NestJS](https://growth-msleeffice.tistory.com/101)), TypeORM, MySQL
-
-✅ AWS EC2, RDS, VPC, S3, Route 53, CloudFront, Certificate Manager, System Manager
-
-✅ Docker, GitHub Actions, Jest
 
 <br>
 
