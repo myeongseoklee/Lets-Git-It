@@ -80,7 +80,7 @@ let's Git it은 **깃허브 기반 개발자 랭킹 서비스**입니다. 랭킹
 
 ### **4. Database schema 설계**
 
-![](./images/ERD.png)
+<img width="621" alt="image" src="https://github.com/myeongseoklee/Lets-Git-It/assets/109528794/2be2ad29-0d09-4caf-a62c-7ab9d32bbce5">
 
 <br>
 
